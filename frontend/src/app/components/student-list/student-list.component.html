@@ -1,0 +1,87 @@
+<div class="header">
+  <h1>Student Management System</h1>
+  <p>Manage your students efficiently with full CRUD operations</p>
+</div>
+
+<div class="card">
+  <div class="search-box">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      (keyup.enter)="onSearch()"
+      placeholder="Search by name or email..." 
+    />
+    <button class="btn btn-primary" (click)="onSearch()">Search</button>
+    <button class="btn btn-secondary" (click)="clearSearch()">Clear</button>
+    <a routerLink="/students/new" class="btn btn-success">Add New Student</a>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading students...
+  </div>
+
+  <table *ngIf="!loading && students.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Date of Birth</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let student of students">
+        <td>{{ student.id }}</td>
+        <td>{{ student.firstName }}</td>
+        <td>{{ student.lastName }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.phone || '-' }}</td>
+        <td>{{ student.dateOfBirth || '-' }}</td>
+        <td class="actions">
+          <a [routerLink]="['/students/edit', student.id]" class="btn btn-warning">Edit</a>
+          <button class="btn btn-danger" (click)="confirmDelete(student)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && students.length === 0" class="loading">
+    No students found. Add a new student to get started.
+  </div>
+
+  <div *ngIf="totalPages > 1" class="pagination">
+    <button (click)="goToPage(0)" [disabled]="first">First</button>
+    <button (click)="prevPage()" [disabled]="first">Previous</button>
+    <button *ngFor="let page of getPageNumbers()" 
+            (click)="goToPage(page)" 
+            [class.active]="page === currentPage">
+      {{ page + 1 }}
+    </button>
+    <button (click)="nextPage()" [disabled]="last">Next</button>
+    <button (click)="goToPage(totalPages - 1)" [disabled]="last">Last</button>
+  </div>
+
+  <div *ngIf="totalElements > 0" class="page-info">
+    Showing {{ currentPage * pageSize + 1 }} to {{ this.getMinIndex((currentPage + 1) * pageSize, totalElements) }} of {{ totalElements }} students
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Confirm Delete</h3>
+    <p>Are you sure you want to delete <strong>{{ studentToDelete?.firstName }} {{ studentToDelete?.lastName }}</strong>?</p>
+    <p>This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-danger" (click)="deleteStudent()">Delete</button>
+      <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+    </div>
+  </div>
+</div>
