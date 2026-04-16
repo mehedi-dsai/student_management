@@ -1,0 +1,80 @@
+name: Deploy Student Management System
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
+          
+      - name: Build Backend
+        run: |
+          cd /root/.openclaw/workspace/student_management/backend
+          mvn clean package -DskipTests
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Cache npm packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
+          
+      - name: Install Frontend dependencies
+        run: |
+          cd /root/.openclaw/workspace/student_management/frontend
+          npm install
+          
+      - name: Build Frontend
+        run: |
+          cd /root/.openclaw/workspace/student_management/frontend
+          npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            cd /root/.openclaw/workspace/student_management
+            docker compose down
+            docker compose up -d --build
+            
+      - name: Verify Deployment
+        run: |
+          sleep 10
+          curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/api/students || echo "Health check failed"
