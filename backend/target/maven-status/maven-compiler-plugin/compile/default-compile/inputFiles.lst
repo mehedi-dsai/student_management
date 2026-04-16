@@ -1,0 +1,8 @@
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/config/CorsConfig.java
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/config/GlobalExceptionHandler.java
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/dto/StudentDTO.java
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/controller/StudentController.java
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/entity/Student.java
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/StudentManagementApplication.java
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/repository/StudentRepository.java
+/root/.openclaw/workspace/student_management/backend/src/main/java/com/studentmanagement/service/StudentService.java

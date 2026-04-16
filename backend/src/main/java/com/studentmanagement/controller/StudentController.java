@@ -111,20 +111,4 @@ public class StudentController {
         response.put("count", (long) students.size());
         return ResponseEntity.ok(response);
     }
-    
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.error("IllegalArgumentException: {}", ex.getMessage());
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-        return ResponseEntity.badRequest().body(error);
-    }
-    
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
-        log.error("Unexpected error: {}", ex.getMessage(), ex);
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "An unexpected error occurred");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
 }
